@@ -14,7 +14,7 @@ dt['drv'] = np.where(dt['drv'].isin(['4','f','r']), dt['drv'], np.nan)
 
 #문제 2번 - box plot 활용해 IQR(InterQuartileRange) 벗어난 값 결측 처리  
 import seaborn as sb 
-import matplotlib.pyplot as mpl
+import matplotlib.pyplot as mpl #colab같은 웹과 달리 로컬에서는 반드시 mpl.pyplot 임포트 필요
 #sb.boxplot(data = dt, y = 'cty')
 #mpl.show() #boxplot 출력 
 
