@@ -1,0 +1,58 @@
+#빅데이터분석기사 실기 환경체험문제 
+import pandas as pd
+
+train = pd.read_csv("data/customer_train.csv")
+test = pd.read_csv("data/customer_test.csv")
+
+# 사용자 코딩
+#1 데이터 유형 파악 
+
+#2 전처리 
+x_train = train.drop(['회원ID','총구매액'], axis = 1)
+y = train['총구매액']
+x_test = test.drop('회원ID', axis = 1)
+# 답안 제출 참고
+# 아래 코드는 예시이며 변수명 등 개인별로 변경하여 활용
+# pd.DataFrame변수.to_csv("result.csv", index=False)
+
+#3 결측치 처리 
+x_train['환불금액'] = x_train['환불금액'].fillna(0)
+x_test['환불금액'] = x_test['환불금액'].fillna(0)
+
+#4 수치형변수 스케일링 
+from sklearn.preprocessing import MinMaxScaler 
+scaler = MinMaxScaler()
+num_columns = x_train.select_dtypes(include = ['number']).columns
+x_train[num_columns] = scaler.fit_transform(x_train[num_columns])
+x_test[num_columns] = scaler.transform(x_test[num_columns])
+
+#범주형 변수 인코딩 
+from sklearn.preprocessing import LabelEncoder
+encoder = LabelEncoder()
+x_train['주구매상품'] = encoder.fit_transform(x_train['주구매상품'])
+x_test['주구매상품'] = encoder.transform(x_test['주구매상품'])
+x_train['주구매지점'] = encoder.fit_transform(x_train['주구매지점'])
+x_test['주구매지점'] = encoder.transform(x_test['주구매지점'])
+
+#데이터 분리 
+from sklearn.model_selection import train_test_split 
+x_train, x_val, y_train, y_val = train_test_split(x_train,y,test_size = 0.2)
+
+#모델 학습 및 검증 
+from sklearn.ensemble import RandomForestRegressor 
+model = RandomForestRegressor()
+model.fit(x_train,y_train)
+y_val_pred = model.predict(x_val)
+
+#평가
+from sklearn.metrics import root_mean_squared_error, r2_score
+rmse = root_mean_squared_error(y_val, y_val_pred)
+r2 = r2_score(y_val, y_val_pred)
+
+#결과저장 
+y_pred = model.predict(x_test)
+result = pd.DataFrame(y_pred, columns = ['pred'])
+result.to_csv('result.csv', index = False)
+
+rs = pd.read_csv('result.csv')
+print(rs)
