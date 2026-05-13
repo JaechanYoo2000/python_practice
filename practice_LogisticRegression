@@ -1,0 +1,50 @@
+import pandas as pd 
+import numpy as np 
+
+# df = pd.read_csv('https://raw.githubusercontent.com/YoungjinBD/data/main/admission.csv')
+
+# p_hat = df['admit'].mean()
+# # print(round(p_hat / (1 - p_hat), 3)) 0.465 
+
+# p= df.groupby('rank')['admit'].mean() 
+# rank_odds = p / (1-p) 
+
+# print(rank_odds)
+
+#474p 빅데이터분석기사 실기 기출문제 작업형 제 3유형 
+import statsmodels.formula.api as smf 
+# df = pd.read_csv('https://raw.githubusercontent.com/YoungjinBD/data/main/exam/10_3_1.csv')
+
+# model = smf.logit('attrition ~ age + income + C(overtime)', data=df).fit()
+# pvalues = model.pvalues
+# params = model.params
+# #print(pvalues)
+
+# test_age = params['age'] 
+# odds_ratio = np.exp(test_age)
+# #print(odds_ratio)
+
+# test_df = pd.DataFrame({'age' : [20], 'income' : [3000], 'overtime' : [2]})
+# predict_prob = model.predict(test_df) 
+# print(predict_prob)
+
+#474p 빅데이터분석기사 실기 기출문제 작업형 제 3유형 2번째 문제 
+df = pd.read_csv('https://raw.githubusercontent.com/YoungjinBD/data/main/exam/10_3_2.csv')
+model = smf.ols('price ~ area + height + wall', data = df).fit()
+
+pvalues = model.pvalues
+params = model.params
+
+A = params[pvalues < 0.05]
+
+#3-2-2
+sig_var_names = A.index.tolist()
+formula = 'price ~ ' + ' + '.join(sig_var_names)
+model2 = smf.ols(formula, data=df).fit()
+r2_rounded = round(model2.rsquared, 3)
+print(r2_rounded)
+
+#3-2-3 
+test_df =pd.DataFrame({'area' : [100], 'height' : [10], 'wall' : [1]})
+predict_price = model2.predict(test_df)
+print(predict_price)
